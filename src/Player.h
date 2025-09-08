@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 #include <string>
+#include <vector>
 
 class Player {
 	public:
@@ -20,9 +21,10 @@ class Player {
 		} Sprite;
 
 		Sprite _sprite;
+		std::vector<Sprite> _animations;
 
 		Player();
-		Player(Vector2 pos, int numFrames, std::string sprite_name, std::string location);
+		Player(Vector2 pos);
 		~Player();
 		void DestroyTextures();
 		void Move(float dt);

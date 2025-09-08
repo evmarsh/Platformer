@@ -18,7 +18,7 @@ Player::Player()
   _gravity (2000.0f)
 { }
 
-Player::Player (Vector2 pos, int numFrames, std::string sprite_name, std::string location)
+Player::Player (Vector2 pos)
 : _pos (pos),
   _is_falling (false),
   _is_jumping (false),
@@ -32,16 +32,18 @@ Player::Player (Vector2 pos, int numFrames, std::string sprite_name, std::string
   _x_acc (100.0f),
   _gravity (2000.0f)
 { 
-	_sprite.name = sprite_name;
-	_sprite.numFrames = numFrames;
+	_sprite.name = "idle";
+	_sprite.numFrames = 7;
 	_sprite.currentFrame = 0;
 	_sprite.frameSpeed = 8;
-	_sprite.texture = LoadTexture(location.c_str());
-	_sprite.frameWidth = _sprite.texture.width / numFrames;
+	_sprite.texture = LoadTexture("resources/Sprites/with_outline/IDLE.png");
+	_sprite.frameWidth = _sprite.texture.width / _sprite.numFrames;
 	_sprite.frameHeight = _sprite.texture.height;
 	_sprite.srcRec = { 0.0f, 0.0f, (float)_sprite.frameWidth, (float)_sprite.frameHeight };
 	_sprite.destRec = { _pos.x, _pos.y, _sprite.frameWidth*2.0f, _sprite.frameHeight*2.0f };
 	_sprite.origin = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
+
+	_animations.push_back(_sprite);
 
 	_size = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
 }
@@ -51,6 +53,22 @@ Player::~Player() {
 
 void Player::DestroyTextures() {
 	UnloadTexture(_sprite.texture);
+}
+
+void Player::LoadAnimations() {
+	// Load run animation
+	Sprite run = {
+		name = "run";
+		numFrames = 8;
+		currentFrame = 0;
+		frameSpeed = 8;
+		texture = LoadTexture("resources/Sprites/with_outline/RUN.png");
+		frameWidth = texture.width / numFrames;
+		frameHeight = texture.height;
+		srcRec = { 0.0f, 0.0f, (float)frameWidth, (float)frameHeight };
+		destRec = { _pos.x, _pos.y, frameWidth*2.0f, frameHeight*2.0f };
+		origin = { (float)frameWidth, (float)frameHeight };
+	};
 }
 
 void Player::Move (float dt) {
@@ -69,7 +87,7 @@ void Player::AdvanceFrame(int* framesCounter) {
 
 		if (_sprite.currentFrame > 5) _sprite.currentFrame = 0;
 		
-		_sprite.srcRec.x = (float)_sprite.currentFrame*(float)_sprite.texture.width/8;
+		_sprite.srcRec.x = (float)_sprite.currentFrame*(float)_sprite.texture.width/_sprite.numFrames;
 	}
 }
 

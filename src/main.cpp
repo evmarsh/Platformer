@@ -16,7 +16,7 @@ int main() {
 
 	InitWindow(screenWidth, screenHeight, "Example");
 
-	Player p({300, 0}, 8, "run", "resources/Sprites/with_outline/RUN.png");
+	Player p({300, 0});
 	p.SetIsFalling(true);
 
 	Vector2 platform_size = {1024, 50};
