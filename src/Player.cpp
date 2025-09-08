@@ -31,21 +31,24 @@ Player::Player (Vector2 pos)
   _max_x_speed (1000.0f),
   _x_acc (100.0f),
   _gravity (2000.0f)
-{ 
-	_sprite.name = "idle";
-	_sprite.numFrames = 7;
-	_sprite.currentFrame = 0;
-	_sprite.frameSpeed = 8;
-	_sprite.texture = LoadTexture("resources/Sprites/with_outline/IDLE.png");
-	_sprite.frameWidth = _sprite.texture.width / _sprite.numFrames;
-	_sprite.frameHeight = _sprite.texture.height;
-	_sprite.srcRec = { 0.0f, 0.0f, (float)_sprite.frameWidth, (float)_sprite.frameHeight };
-	_sprite.destRec = { _pos.x, _pos.y, _sprite.frameWidth*2.0f, _sprite.frameHeight*2.0f };
-	_sprite.origin = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
+{
+	Sprite* sprite = new Sprite;
+	sprite->name = "idle";
+	sprite->numFrames = 7;
+	sprite->currentFrame = 0;
+	sprite->frameSpeed = 8;
+	sprite->texture = LoadTexture("resources/Sprites/with_outline/IDLE.png");
+	sprite->frameWidth = sprite->texture.width / sprite->numFrames;
+	sprite->frameHeight = sprite->texture.height;
+	sprite->srcRec = { 0.0f, 0.0f, (float)sprite->frameWidth, (float)sprite->frameHeight };
+	sprite->destRec = { _pos.x, _pos.y, sprite->frameWidth*2.0f, sprite->frameHeight*2.0f };
+	sprite->origin = { (float)sprite->frameWidth, (float)sprite->frameHeight };
 
-	_animations.push_back(_sprite);
+	_animations.push_back(sprite);
 
-	_size = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
+	_sprite = _animations[0];
+
+	_size = { (float)sprite->frameWidth, (float)sprite->frameHeight };
 
 	LoadAnimations();
 }
@@ -54,22 +57,25 @@ Player::~Player() {
 }
 
 void Player::DestroyTextures() {
-	UnloadTexture(_sprite.texture);
+	for (auto it = _animations.begin(); it != _animations.end(); ++it) {
+		UnloadTexture((*it)->texture);
+		delete *it;
+	}
 }
 
 void Player::LoadAnimations() {
 	// Load run animation
-	Sprite run;
-	run.name = "run";
-	run.numFrames = 8;
-	run.currentFrame = 0;
-	run.frameSpeed = 8;
-	run.texture = LoadTexture("resources/Sprites/with_outline/RUN.png");
-	run.frameWidth = run.texture.width / run.numFrames;
-	run.frameHeight = run.texture.height;
-	run.srcRec = { 0.0f, 0.0f, (float)run.frameWidth, (float)run.frameHeight };
-	run.destRec = { _pos.x, _pos.y, run.frameWidth*2.0f, run.frameHeight*2.0f };
-	run.origin = { (float)run.frameWidth, (float)run.frameHeight };
+	Sprite* run = new Sprite;
+	run->name = "run";
+	run->numFrames = 8;
+	run->currentFrame = 0;
+	run->frameSpeed = 8;
+	run->texture = LoadTexture("resources/Sprites/with_outline/RUN.png");
+	run->frameWidth = run->texture.width / run->numFrames;
+	run->frameHeight = run->texture.height;
+	run->srcRec = { 0.0f, 0.0f, (float)run->frameWidth, (float)run->frameHeight };
+	run->destRec = { _pos.x, _pos.y, run->frameWidth*2.0f, run->frameHeight*2.0f };
+	run->origin = { (float)run->frameWidth, (float)run->frameHeight };
 
 	_animations.push_back(run);
 }
@@ -84,28 +90,28 @@ void Player::Jump (float dt) {
 }
 
 void Player::AdvanceFrame (int* framesCounter) {
-	if (*framesCounter >= (60/_sprite.frameSpeed)) {
+	if (*framesCounter >= (60/_sprite->frameSpeed)) {
 		*framesCounter = 0;
-		_sprite.currentFrame++;
+		_sprite->currentFrame++;
 
-		if (_sprite.currentFrame > _sprite.numFrames-1) _sprite.currentFrame = 0;
+		if (_sprite->currentFrame > _sprite->numFrames-1) _sprite->currentFrame = 0;
 		
-		_sprite.srcRec.x = (float)_sprite.currentFrame*(float)_sprite.texture.width/_sprite.numFrames;
+		_sprite->srcRec.x = (float)_sprite->currentFrame*(float)_sprite->texture.width/_sprite->numFrames;
 	}
 }
 
 void Player::SwapAnimations (std::string animation_name) {
-	Sprite& animation = FindAnimation(animation_name);
-	if (animation.name != _sprite.name) {
-		_sprite.currentFrame = 0;
+	Sprite* animation = FindAnimation(animation_name);
+	if (animation->name != _sprite->name) {
+		_sprite->currentFrame = 0;
 
 		_sprite = animation;
 	}
 }
 
-Sprite& Player::FindAnimation (std::string animation_name) {
+Sprite* Player::FindAnimation (std::string animation_name) {
 	for (auto it = _animations.begin(); it != _animations.end(); ++it) {
-		if ((*it).name == animation_name) {
+		if ((*it)->name == animation_name) {
 			return *it;
 		}
 	}
@@ -114,9 +120,9 @@ Sprite& Player::FindAnimation (std::string animation_name) {
 }
 
 void Player::Draw() {
-	_sprite.destRec.x = _pos.x;
-	_sprite.destRec.y = _pos.y;
-	DrawTexturePro(_sprite.texture, _sprite.srcRec, _sprite.destRec, _sprite.origin, 0.0f, WHITE);
+	_sprite->destRec.x = _pos.x;
+	_sprite->destRec.y = _pos.y;
+	DrawTexturePro(_sprite->texture, _sprite->srcRec, _sprite->destRec, _sprite->origin, 0.0f, WHITE);
 }
 
 void Player::Fall (float dt) {

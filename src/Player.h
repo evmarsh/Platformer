@@ -8,21 +8,8 @@
 
 class Player {
 	public:
-		/*typedef struct Sprite {
-			std::string name;
-			int numFrames;
-			int currentFrame;
-			int frameSpeed;
-			int frameWidth;
-			int frameHeight;
-			Texture2D texture;
-			Rectangle srcRec;
-			Rectangle destRec;
-			Vector2 origin;
-		} Sprite;*/
-
-		Sprite _sprite;
-		std::vector<Sprite> _animations;
+		Sprite* _sprite;
+		std::vector<Sprite*> _animations;
 
 		Player();
 		Player(Vector2 pos);
@@ -30,7 +17,7 @@ class Player {
 		void DestroyTextures();
 		void LoadAnimations();
 		void SwapAnimations(std::string animation_name);
-		Sprite& FindAnimation(std::string animation_name);
+		Sprite* FindAnimation(std::string animation_name);
 		void Move(float dt);
 		void Jump(float dt);
 		void AdvanceFrame(int* framesCounter);

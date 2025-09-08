@@ -34,13 +34,13 @@ int main() {
 		} 
 
 		if (IsKeyDown(KEY_RIGHT)) {
-			if (p._sprite.name != "run") {
+			if (p._sprite->name != "run") {
 				p.SwapAnimations("run");
 			}
 			p.Move(dt);
 		}
 		if (IsKeyDown(KEY_LEFT)) {
-			if (p._sprite.name != "run") {
+			if (p._sprite->name != "run") {
 				p.SwapAnimations("run");
 			}
 			p.Move(-dt);
