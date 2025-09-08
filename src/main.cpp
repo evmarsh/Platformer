@@ -33,8 +33,18 @@ int main() {
 			dt = max_frame_time;
 		} 
 
-		if (IsKeyDown(KEY_RIGHT)) p.Move(dt);
-		if (IsKeyDown(KEY_LEFT)) p.Move(-dt);
+		if (IsKeyDown(KEY_RIGHT)) {
+			if (p._sprite.name != "run") {
+				p.SwapAnimations("run");
+			}
+			p.Move(dt);
+		}
+		if (IsKeyDown(KEY_LEFT)) {
+			if (p._sprite.name != "run") {
+				p.SwapAnimations("run");
+			}
+			p.Move(-dt);
+		}
 		if (IsKeyDown(KEY_UP) && !p.IsJumping()) { p.SetIsJumping(true); p.SetYSpeed(-p.GetJumpStrength()); }
 
 		framesCounter++;

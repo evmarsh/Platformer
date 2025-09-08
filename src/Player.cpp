@@ -46,6 +46,8 @@ Player::Player (Vector2 pos)
 	_animations.push_back(_sprite);
 
 	_size = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
+
+	LoadAnimations();
 }
 
 Player::~Player() {
@@ -57,18 +59,19 @@ void Player::DestroyTextures() {
 
 void Player::LoadAnimations() {
 	// Load run animation
-	Sprite run = {
-		name = "run";
-		numFrames = 8;
-		currentFrame = 0;
-		frameSpeed = 8;
-		texture = LoadTexture("resources/Sprites/with_outline/RUN.png");
-		frameWidth = texture.width / numFrames;
-		frameHeight = texture.height;
-		srcRec = { 0.0f, 0.0f, (float)frameWidth, (float)frameHeight };
-		destRec = { _pos.x, _pos.y, frameWidth*2.0f, frameHeight*2.0f };
-		origin = { (float)frameWidth, (float)frameHeight };
-	};
+	Sprite run;
+	run.name = "run";
+	run.numFrames = 8;
+	run.currentFrame = 0;
+	run.frameSpeed = 8;
+	run.texture = LoadTexture("resources/Sprites/with_outline/RUN.png");
+	run.frameWidth = run.texture.width / run.numFrames;
+	run.frameHeight = run.texture.height;
+	run.srcRec = { 0.0f, 0.0f, (float)run.frameWidth, (float)run.frameHeight };
+	run.destRec = { _pos.x, _pos.y, run.frameWidth*2.0f, run.frameHeight*2.0f };
+	run.origin = { (float)run.frameWidth, (float)run.frameHeight };
+
+	_animations.push_back(run);
 }
 
 void Player::Move (float dt) {
@@ -80,15 +83,34 @@ void Player::Jump (float dt) {
 	_pos.y += _y_speed * dt;
 }
 
-void Player::AdvanceFrame(int* framesCounter) {
+void Player::AdvanceFrame (int* framesCounter) {
 	if (*framesCounter >= (60/_sprite.frameSpeed)) {
 		*framesCounter = 0;
 		_sprite.currentFrame++;
 
-		if (_sprite.currentFrame > 5) _sprite.currentFrame = 0;
+		if (_sprite.currentFrame > _sprite.numFrames-1) _sprite.currentFrame = 0;
 		
 		_sprite.srcRec.x = (float)_sprite.currentFrame*(float)_sprite.texture.width/_sprite.numFrames;
 	}
+}
+
+void Player::SwapAnimations (std::string animation_name) {
+	Sprite& animation = FindAnimation(animation_name);
+	if (animation.name != _sprite.name) {
+		_sprite.currentFrame = 0;
+
+		_sprite = animation;
+	}
+}
+
+Sprite& Player::FindAnimation (std::string animation_name) {
+	for (auto it = _animations.begin(); it != _animations.end(); ++it) {
+		if ((*it).name == animation_name) {
+			return *it;
+		}
+	}
+
+	return _sprite;
 }
 
 void Player::Draw() {

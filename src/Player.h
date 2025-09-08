@@ -2,12 +2,13 @@
 #define PLAYER_H
 
 #include "raylib.h"
+#include "Sprite.h"
 #include <string>
 #include <vector>
 
 class Player {
 	public:
-		typedef struct Sprite {
+		/*typedef struct Sprite {
 			std::string name;
 			int numFrames;
 			int currentFrame;
@@ -18,7 +19,7 @@ class Player {
 			Rectangle srcRec;
 			Rectangle destRec;
 			Vector2 origin;
-		} Sprite;
+		} Sprite;*/
 
 		Sprite _sprite;
 		std::vector<Sprite> _animations;
@@ -27,6 +28,9 @@ class Player {
 		Player(Vector2 pos);
 		~Player();
 		void DestroyTextures();
+		void LoadAnimations();
+		void SwapAnimations(std::string animation_name);
+		Sprite& FindAnimation(std::string animation_name);
 		void Move(float dt);
 		void Jump(float dt);
 		void AdvanceFrame(int* framesCounter);
