@@ -16,11 +16,15 @@ int main() {
 
 	InitWindow(screenWidth, screenHeight, "Example");
 
-	Player p({300, 0});
+	Texture2D test = LoadTexture("/resources/Sprites/with_outline/RUN.png");
+
+	Player p({300, 0}, 8, "run", "../resources/Sprites/with_outline/RUN.png");
 	p.SetIsFalling(true);
 
 	Vector2 platform_size = {1024, 50};
 	Vector2 platform_pos = {0, 700};
+
+	int framesCounter = 0;
 
 	SetTargetFPS(60);
 
@@ -35,6 +39,9 @@ int main() {
 		if (IsKeyDown(KEY_LEFT)) p.Move(-dt);
 		if (IsKeyDown(KEY_UP) && !p.IsJumping()) { p.SetIsJumping(true); p.SetYSpeed(-p.GetJumpStrength()); }
 
+		framesCounter++;
+
+		p.AdvanceFrame(&framesCounter);
 
 		if (p.IsJumping() && !p.IsFalling()) {
 			p.Jump(dt);
@@ -46,9 +53,9 @@ int main() {
 
 		BeginDrawing();
 			ClearBackground(BLACK);
-			
-			DrawRectangleV(platform_pos, platform_size, GRAY);
 			p.Draw();
+
+			p.DrawTexRec();
 		EndDrawing();
 
 		if (checkCollision(p.GetPos().x, platform_pos.x, p.GetPos().y, platform_pos.y, p.GetSize().x, platform_size.x, p.GetSize().y, platform_size.y)) {
