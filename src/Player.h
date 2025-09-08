@@ -11,8 +11,12 @@ class Player {
 			int numFrames;
 			int currentFrame;
 			int frameSpeed;
+			int frameWidth;
+			int frameHeight;
 			Texture2D texture;
-			Rectangle frameRec;
+			Rectangle srcRec;
+			Rectangle destRec;
+			Vector2 origin;
 		} Sprite;
 
 		Sprite _sprite;
@@ -20,11 +24,11 @@ class Player {
 		Player();
 		Player(Vector2 pos, int numFrames, std::string sprite_name, std::string location);
 		~Player();
+		void DestroyTextures();
 		void Move(float dt);
 		void Jump(float dt);
 		void AdvanceFrame(int* framesCounter);
 		void Draw();
-		void DrawTexRec();
 		bool IsFalling();
 		bool IsJumping();
 		void Fall(float dt);

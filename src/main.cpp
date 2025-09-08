@@ -16,9 +16,7 @@ int main() {
 
 	InitWindow(screenWidth, screenHeight, "Example");
 
-	Texture2D test = LoadTexture("/resources/Sprites/with_outline/RUN.png");
-
-	Player p({300, 0}, 8, "run", "../resources/Sprites/with_outline/RUN.png");
+	Player p({300, 0}, 8, "run", "resources/Sprites/with_outline/RUN.png");
 	p.SetIsFalling(true);
 
 	Vector2 platform_size = {1024, 50};
@@ -53,18 +51,20 @@ int main() {
 
 		BeginDrawing();
 			ClearBackground(BLACK);
-			p.Draw();
 
-			p.DrawTexRec();
+			DrawRectangleV(platform_pos, platform_size, GRAY);
+			p.Draw();
 		EndDrawing();
 
 		if (checkCollision(p.GetPos().x, platform_pos.x, p.GetPos().y, platform_pos.y, p.GetSize().x, platform_size.x, p.GetSize().y, platform_size.y)) {
 			p.SetIsFalling(false);
 			p.SetIsJumping(false);
 			p.SetYSpeed(0.0f);
-			p.SetPos({p.GetPos().x, platform_pos.y - platform_size.y});
+			p.SetPos({p.GetPos().x, platform_pos.y - platform_size.y+12});
 		}
 	}
+
+	p.DestroyTextures();
 
 	CloseWindow();
 

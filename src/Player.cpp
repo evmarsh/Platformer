@@ -20,7 +20,6 @@ Player::Player()
 
 Player::Player (Vector2 pos, int numFrames, std::string sprite_name, std::string location)
 : _pos (pos),
-  _size ({50, 50}),
   _is_falling (false),
   _is_jumping (false),
   _hp (3),
@@ -33,16 +32,24 @@ Player::Player (Vector2 pos, int numFrames, std::string sprite_name, std::string
   _x_acc (100.0f),
   _gravity (2000.0f)
 { 
-	Sprite _sprite;
 	_sprite.name = sprite_name;
 	_sprite.numFrames = numFrames;
 	_sprite.currentFrame = 0;
 	_sprite.frameSpeed = 8;
 	_sprite.texture = LoadTexture(location.c_str());
-	_sprite.frameRec = { 0.0f, 0.0f, (float)_sprite.texture.width/_sprite.numFrames, (float)_sprite.texture.height };
+	_sprite.frameWidth = _sprite.texture.width / numFrames;
+	_sprite.frameHeight = _sprite.texture.height;
+	_sprite.srcRec = { 0.0f, 0.0f, (float)_sprite.frameWidth, (float)_sprite.frameHeight };
+	_sprite.destRec = { _pos.x, _pos.y, _sprite.frameWidth*2.0f, _sprite.frameHeight*2.0f };
+	_sprite.origin = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
+
+	_size = { (float)_sprite.frameWidth, (float)_sprite.frameHeight };
 }
 
 Player::~Player() {
+}
+
+void Player::DestroyTextures() {
 	UnloadTexture(_sprite.texture);
 }
 
@@ -62,16 +69,14 @@ void Player::AdvanceFrame(int* framesCounter) {
 
 		if (_sprite.currentFrame > 5) _sprite.currentFrame = 0;
 		
-		_sprite.frameRec.x = (float)_sprite.currentFrame*(float)_sprite.texture.width/8;
+		_sprite.srcRec.x = (float)_sprite.currentFrame*(float)_sprite.texture.width/8;
 	}
 }
 
 void Player::Draw() {
-	DrawTexture(_sprite.texture, 15, 40, WHITE);
-}
-
-void Player::DrawTexRec() {
-	DrawTextureRec(_sprite.texture, _sprite.frameRec, _pos, WHITE);
+	_sprite.destRec.x = _pos.x;
+	_sprite.destRec.y = _pos.y;
+	DrawTexturePro(_sprite.texture, _sprite.srcRec, _sprite.destRec, _sprite.origin, 0.0f, WHITE);
 }
 
 void Player::Fall (float dt) {
